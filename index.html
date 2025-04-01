@@ -70,7 +70,7 @@
       .load('royal_esplanade_1k.hdr', function (texture) {
         const envMap = pmremGenerator.fromEquirectangular(texture).texture;
         scene.environment = envMap;
-        scene.background = null; // Set to envMap if you want to see the HDRI in background
+        scene.background = envMap; // Set to envMap if you want to see the HDRI in background
 
         texture.dispose();
         pmremGenerator.dispose();
