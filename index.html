@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Working 3D Viewer</title>
+  <title>Working 3D Viewer with DRACO</title>
   <style>
     html, body {
       margin: 0;
@@ -26,6 +26,7 @@
     import { OrbitControls } from 'https://esm.sh/three@0.160.1/examples/jsm/controls/OrbitControls.js';
     import { GLTFLoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
     import { RGBELoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/RGBELoader.js';
+    import { DRACOLoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/DRACOLoader.js';
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
@@ -47,22 +48,22 @@
         scene.background = texture;
 
         const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
 
-const loader = new GLTFLoader();
-loader.setDRACOLoader(dracoLoader);
+        const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
 
-loader.load(
-  'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
-  function (gltf) {
-    scene.add(gltf.scene);
-    animate();
-  },
-  undefined,
-  function (error) {
-    console.error('GLB load error:', error);
-  }
-);
+        loader.load(
+          'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
+          function (gltf) {
+            scene.add(gltf.scene);
+            animate();
+          },
+          undefined,
+          function (error) {
+            console.error('GLB load error:', error);
+          }
+        );
       });
 
     function animate() {
