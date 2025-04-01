@@ -23,13 +23,12 @@
   </head>
   <body>
     <script type="module">
-      import * as THREE from 'https://santitouch.github.io/3d-model-viewer/three.module.js';
-      import { OrbitControls } from 'https://santitouch.github.io/3d-model-viewer/OrbitControls.js';
-      import { GLTFLoader } from 'https://santitouch.github.io/3d-model-viewer/GLTFLoader.js';
-      import { RGBELoader } from 'https://santitouch.github.io/3d-model-viewer/RGBELoader.js';
+      import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+      import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
+      import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
+      import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/RGBELoader.js';
 
       const scene = new THREE.Scene();
-
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
       camera.position.set(1.5, 1.5, 2);
 
