@@ -25,13 +25,13 @@
 <body>
   <div id="viewer"></div>
 
-  <!-- ✅ Core Three.js -->
+  <!-- ✅ Core Three.js from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
 
-  <!-- ✅ Working example files via unpkg -->
-  <script src="https://unpkg.com/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://unpkg.com/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://unpkg.com/three@0.150.1/examples/js/loaders/RGBELoader.js"></script>
+  <!-- ✅ Locally hosted helper files -->
+  <script src="OrbitControls.js"></script>
+  <script src="GLTFLoader.js"></script>
+  <script src="RGBELoader.js"></script>
 
   <script>
     const container = document.getElementById('viewer');
@@ -46,7 +46,6 @@
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    // ✅ Use OrbitControls directly (not THREE.OrbitControls)
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.1;
@@ -68,7 +67,6 @@
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     pmremGenerator.compileEquirectangularShader();
 
-    // ✅ Load HDRI
     new RGBELoader()
       .setDataType(THREE.UnsignedByteType)
       .setPath('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/')
@@ -80,7 +78,6 @@
         texture.dispose();
         pmremGenerator.dispose();
 
-        // ✅ Load 3D model
         loader.load(
           'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
           (gltf) => {
