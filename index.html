@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>3D Car Viewer with HDRI</title>
+  <meta charset="UTF-8">
+  <title>Minimal 3D Model Test</title>
   <style>
     html, body {
       margin: 0;
@@ -15,116 +15,58 @@
     #viewer {
       width: 100%;
       height: 100vh;
-      position: relative;
-    }
-    canvas {
-      display: block;
     }
   </style>
 </head>
 <body>
   <div id="viewer"></div>
 
-  <!-- ✅ Load Three.js as ES module -->
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
-    import { OrbitControls } from './OrbitControls.js';
-    import { GLTFLoader } from './GLTFLoader.js';
-    import { RGBELoader } from './RGBELoader.js';
+  <!-- ✅ Use legacy Three.js build with GLTFLoader as a global script -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.148.0/examples/js/loaders/GLTFLoader.js"></script>
 
+  <script>
     const container = document.getElementById('viewer');
+
     const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1, 3);
 
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-    camera.position.set(2, 2, 5);
-    camera.lookAt(0, 0, 0);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.1;
-    controls.minDistance = 2;
-    controls.maxDistance = 8;
+    const light = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(light);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+      'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
+      function (gltf) {
+        const model = gltf.scene;
+        model.scale.set(1, 1, 1);
+        model.rotation.y = Math.PI;
+        scene.add(model);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-    directionalLight.position.set(5, 5, 5);
-    scene.add(directionalLight);
-
-    const pointLight = new THREE.PointLight(0xaa44ff, 1.5, 10);
-    pointLight.visible = false;
-    scene.add(pointLight);
-
-    const loader = new GLTFLoader();
-    const pmremGenerator = new THREE.PMREMGenerator(renderer);
-    pmremGenerator.compileEquirectangularShader();
-
-    new RGBELoader()
-      .setDataType(THREE.UnsignedByteType)
-      .setPath('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/')
-      .load('royal_esplanade_1k.hdr', function (texture) {
-        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
-        scene.environment = envMap;
-        scene.background = null;
-
-        texture.dispose();
-        pmremGenerator.dispose();
-
-        loader.load(
-          'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
-          (gltf) => {
-            const model = gltf.scene;
-            model.scale.set(1, 1, 1);
-            model.position.set(0, 0, 0);
-            scene.add(model);
-            console.log('✅ Model + HDRI loaded');
-          },
-          undefined,
-          (error) => {
-            console.error('❌ Error loading model', error);
-          }
-        );
-      });
-
-    container.addEventListener('mouseenter', () => {
-      pointLight.visible = true;
-    });
-
-    container.addEventListener('mouseleave', () => {
-      pointLight.visible = false;
-    });
-
-    container.addEventListener('mousemove', (e) => {
-      const rect = container.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width * 2 - 1;
-      const y = -(e.clientY - rect.top) / rect.height * 2 + 1;
-
-      const vector = new THREE.Vector3(x, y, 0.5).unproject(camera);
-      const dir = vector.sub(camera.position).normalize();
-      const distance = (0 - camera.position.z) / dir.z;
-      const pos = camera.position.clone().add(dir.multiplyScalar(distance));
-
-      pointLight.position.set(pos.x, pos.y, pos.z + 2);
-    });
-
-    function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    animate();
+        // Simple animation loop
+        function animate() {
+          requestAnimationFrame(animate);
+          model.rotation.y += 0.005;
+          renderer.render(scene, camera);
+        }
+        animate();
+      },
+      undefined,
+      function (error) {
+        console.error('Model load error:', error);
+      }
+    );
 
     window.addEventListener('resize', () => {
-      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
