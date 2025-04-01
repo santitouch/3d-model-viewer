@@ -22,12 +22,11 @@
   </style>
 </head>
 <body>
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
-    import { RGBELoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/RGBELoader.js';
-
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/loaders/RGBELoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.js"></script>
+  <script>
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
@@ -38,19 +37,17 @@
     renderer.outputEncoding = THREE.sRGBEncoding;
     document.body.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-    // Load HDRI environment
-    new RGBELoader()
+    new THREE.RGBELoader()
       .setDataType(THREE.UnsignedByteType)
       .load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/venice_sunset_1k.hdr', function (texture) {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         scene.environment = texture;
         scene.background = texture;
 
-        // Now load model
-        const loader = new GLTFLoader();
+        const loader = new THREE.GLTFLoader();
         loader.load('https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
           function (gltf) {
             gltf.scene.scale.set(1, 1, 1);
@@ -59,7 +56,7 @@
           },
           undefined,
           function (error) {
-            console.error('An error happened loading the GLB', error);
+            console.error('Error loading GLB', error);
           }
         );
       });
