@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>3D Car Viewer</title>
+  <title>3D Car Viewer with HDRI</title>
   <style>
     html, body {
       margin: 0;
@@ -28,6 +28,7 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/RGBELoader.js"></script>
 
   <script>
     const container = document.getElementById('viewer');
@@ -48,32 +49,47 @@
     controls.minDistance = 2;
     controls.maxDistance = 8;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    const pointLight = new THREE.PointLight(0xaa44ff, 1.2, 10);
-    scene.add(pointLight);
+    const pointLight = new THREE.PointLight(0xaa44ff, 1.5, 10);
     pointLight.visible = false;
+    scene.add(pointLight);
 
     const loader = new THREE.GLTFLoader();
-    loader.load(
-      'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
-      (gltf) => {
-        const model = gltf.scene;
-        model.scale.set(1, 1, 1);
-        model.position.set(0, 0, 0);
-        scene.add(model);
-        console.log('✅ Model loaded');
-      },
-      undefined,
-      (error) => {
-        console.error('❌ Error loading model', error);
-      }
-    );
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    pmremGenerator.compileEquirectangularShader();
+
+    new THREE.RGBELoader()
+      .setDataType(THREE.UnsignedByteType)
+      .setPath('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/')
+      .load('royal_esplanade_1k.hdr', function (texture) {
+        const envMap = pmremGenerator.fromEquirectangular(texture).texture;
+        scene.environment = envMap;
+        scene.background = null; // Set to envMap if you want to see the HDRI in background
+
+        texture.dispose();
+        pmremGenerator.dispose();
+
+        loader.load(
+          'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
+          (gltf) => {
+            const model = gltf.scene;
+            model.scale.set(1, 1, 1);
+            model.position.set(0, 0, 0);
+            scene.add(model);
+            console.log('✅ Model + HDRI loaded');
+          },
+          undefined,
+          (error) => {
+            console.error('❌ Error loading model', error);
+          }
+        );
+      });
 
     container.addEventListener('mouseenter', () => {
       pointLight.visible = true;
