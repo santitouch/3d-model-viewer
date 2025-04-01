@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <title>3D Model Viewer</title>
     <style>
-      html,
-      body {
+      html, body {
         margin: 0;
         padding: 0;
         background: #000;
@@ -14,6 +13,7 @@
         justify-content: center;
         height: 100vh;
       }
+
       canvas {
         width: 800px;
         height: 800px;
@@ -24,9 +24,9 @@
   <body>
     <script type="module">
       import * as THREE from 'https://santitouch.github.io/3d-model-viewer/three.module.js';
-import { OrbitControls } from 'https://santitouch.github.io/3d-model-viewer/OrbitControls.js';
-import { GLTFLoader } from 'https://santitouch.github.io/3d-model-viewer/GLTFLoader.js';
-import { RGBELoader } from 'https://santitouch.github.io/3d-model-viewer/RGBELoader.js';
+      import { OrbitControls } from 'https://santitouch.github.io/3d-model-viewer/OrbitControls.js';
+      import { GLTFLoader } from 'https://santitouch.github.io/3d-model-viewer/GLTFLoader.js';
+      import { RGBELoader } from 'https://santitouch.github.io/3d-model-viewer/RGBELoader.js';
 
       const scene = new THREE.Scene();
 
@@ -43,7 +43,7 @@ import { RGBELoader } from 'https://santitouch.github.io/3d-model-viewer/RGBELoa
 
       new RGBELoader()
         .setDataType(THREE.UnsignedByteType)
-        .load('https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/equirectangular/venice_sunset_1k.hdr', function (texture) {
+        .load('https://santitouch.github.io/3d-model-viewer/venice_sunset_1k.hdr', function (texture) {
           texture.mapping = THREE.EquirectangularReflectionMapping;
           scene.environment = texture;
           scene.background = texture;
