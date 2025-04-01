@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>3D Car Viewer</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    #viewer {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script>
+    const container = document.getElementById('viewer');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera.position.set(2, 2, 4);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.1;
+    controls.minDistance = 2;
+    controls.maxDistance = 6;
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xaa44ff, 0.8, 10);
+    scene.add(pointLight);
+    pointLight.visible = false;
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb', (gltf) => {
+      const model = gltf.scene;
+      scene.add(model);
+    });
+
+    container.addEventListener('mouseenter', () => {
+      pointLight.visible = true;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      pointLight.visible = false;
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width * 2 - 1;
+      const y = -(e.clientY - rect.top) / rect.height * 2 + 1;
+
+      const mouseVector = new THREE.Vector3(x, y, 0.5).unproject(camera);
+      const dir = mouseVector.sub(camera.position).normalize();
+      const distance = -camera.position.z / dir.z;
+      const position = camera.position.clone().add(dir.multiplyScalar(distance));
+      pointLight.position.set(position.x, position.y, position.z + 2);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    });
+  </script>
+</body>
+</html>
