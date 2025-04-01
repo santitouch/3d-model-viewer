@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Working 3D Viewer with DRACO</title>
+  <title>3D Viewer with Spotlight & HDR Reflection</title>
   <style>
     html, body {
       margin: 0;
@@ -30,7 +30,7 @@
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(1.5, 1.5, 2);
+    camera.position.set(1.5, 1.5, 1,5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(800, 800);
@@ -40,12 +40,34 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
+    // Add subtle light purple spotlight
+    const spotlight = new THREE.SpotLight(0xdab6ff, 1.5, 5, Math.PI / 8, 0.5, 1);
+    spotlight.position.set(0, 1, 2);
+    spotlight.visible = false;
+    scene.add(spotlight);
+    scene.add(spotlight.target);
+
+    renderer.domElement.addEventListener('mouseenter', () => spotlight.visible = true);
+    renderer.domElement.addEventListener('mouseleave', () => spotlight.visible = false);
+
+    renderer.domElement.addEventListener('mousemove', (event) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      // Convert normalized coordinates to 3D world position
+      const vector = new THREE.Vector3(x, y, 0.5).unproject(camera);
+      spotlight.position.copy(camera.position);
+      spotlight.target.position.copy(vector);
+    });
+
     new RGBELoader()
       .setDataType(THREE.FloatType)
       .load('https://santitouch.github.io/3d-model-viewer/venice_sunset_1k.hdr', function (texture) {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         scene.environment = texture;
-        scene.background = texture;
+        // No background texture
+        scene.background = new THREE.Color(0x000000);
 
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
