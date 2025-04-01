@@ -23,11 +23,9 @@
 <body>
   <script type="module">
     import * as THREE from 'https://esm.sh/three@0.160.1';
-import { OrbitControls } from 'https://esm.sh/three@0.160.1/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/RGBELoader.js';
-
-
+    import { OrbitControls } from 'https://esm.sh/three@0.160.1/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/GLTFLoader.js';
+    import { RGBELoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/RGBELoader.js';
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
@@ -41,26 +39,12 @@ import { RGBELoader } from 'https://esm.sh/three@0.160.1/examples/jsm/loaders/RG
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-        new RGBELoader()
-  .setDataType(THREE.FloatType) // Fix here
-  .load('https://santitouch.github.io/3d-model-viewer/venice_sunset_1k.hdr', function (texture) {
-    texture.mapping = THREE.EquirectangularReflectionMapping;
-    scene.environment = texture;
-    scene.background = texture;
-
-    const loader = new GLTFLoader();
-    loader.load(
-      'https://santitouch.github.io/3d-model-viewer/7017526c-b73d-4420-a226-f0202d8a238f_base_basic_pbr.glb',
-      function (gltf) {
-        scene.add(gltf.scene);
-        animate();
-      },
-      undefined,
-      function (error) {
-        console.error('GLB load error:', error);
-      }
-    );
-  });
+    new RGBELoader()
+      .setDataType(THREE.FloatType)
+      .load('https://santitouch.github.io/3d-model-viewer/venice_sunset_1k.hdr', function (texture) {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = texture;
+        scene.background = texture;
 
         const loader = new GLTFLoader();
         loader.load(
