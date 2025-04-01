@@ -1,3 +1,9 @@
+UNPKG
+three
+Version: 
+0.160.1
+JavaScript 3D library
+
 three / build / three.module.js
 /**
  * @license
